@@ -1,6 +1,6 @@
 # SQL Alchemy
 
-![Surf](\Images\hawaii_surf.jpg)
+![Surf](Images\hawaii_surf.jpg)
 
 ## Climate Analysis and Engineering
 Uses SQLAlchemy to access a sqlite database to perform data exploration and analysis
