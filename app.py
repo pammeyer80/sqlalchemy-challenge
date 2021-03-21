@@ -41,7 +41,8 @@ def welcome():
         f"Available Routes:<br/>"
         f"  /api/v1.0/precipitation<br/>"
         f"  /api/v1.0/stations<br/>"
-        f"  /api/v1.0/tobs<br/>"
+        f"  /api/v1.0/tobs<br/><br/>"
+        f"For the following routes start and end dates should be formatted <strong>yyyy-mm-dd</strong>. End date is optional.<br>"
         f"  /api/v1.0/&#60;start&#62;<br/>"
         f"  /api/v1.0/&#60;start&#62;/&#60;end&#62;<br/>"
     )
@@ -106,9 +107,10 @@ def stats_start(start, end=None):
     session = Session(engine)
 
     if end == None:
-         # Query all precipitation scores in the last 12 months
-         results = session.query(Measurement.tobs).filter(Measurement.date>=start, Measurement.tobs!="None").all()
+        # Query temperatures since the start date
+        results = session.query(Measurement.tobs).filter(Measurement.date>=start, Measurement.tobs!="None").all()
     else:
+        # Query temperatures between start and end date
         results = session.query(Measurement.tobs).filter(Measurement.date>=start, Measurement.date<=end,Measurement.tobs!="None").all()
 #     
     session.close()
@@ -117,7 +119,6 @@ def stats_start(start, end=None):
 
     stats_all = []
     stats_dict = {}
-    stats_dict["Date"] = start
     stats_dict["Minimum Temp"] = stats.tmin(results_ls)
     stats_dict["Maximum Temp"] = stats.tmax(results_ls)
     stats_dict["Average Temp"] = round(stats.tmean(results_ls), 2)
@@ -126,27 +127,6 @@ def stats_start(start, end=None):
     return jsonify(stats_all)
 
 
-# @app.route("/api/v1.0/<start>/<end>")
-# def stats_start(start, end):
-#     # Create our session (link) from Python to the DB
-#     session = Session(engine)
-
-#     # Query all precipitation scores in the last 12 months
-#     results = session.query(Measurement.tobs).filter(Measurement.date>=start, Measurement.date<=end,Measurement.tobs!="None").all()
-#     session.close()
-
-#     results_ls = [result[0] for result in results]
-
-#     stats_all = []
-#     stats_dict = {}
-#     stats_dict["Start Date"] = start
-#     stats_dict["End Date"] = end
-#     stats_dict["Minimum Temp"] = stats.tmin(results_ls)
-#     stats_dict["Maximum Temp"] = stats.tmax(results_ls)
-#     stats_dict["Average Temp"] = round(stats.tmean(results_ls), 2)
-#     stats_all.append(stats_dict)
-
-#     return jsonify(stats_all)
 
 if __name__ == "__main__":
     app.run(debug=True)
